@@ -21,28 +21,26 @@ require_once __DIR__.('/view/loginHeader.php');
 */
 if(isset($user)){
         $numOfTweets = Twitter::getNumberOfTweetsByUser($user->getId());
-        $numOfDisplayTweets = 4;
+        $numberOfTweetsToDisplay = 4;
         $printLinks = false;
         $currentDisplayedTweetsScope= "";
         
         
 
             if($numOfTweets != 0){                
-                if( $numOfTweets <= $numOfDisplayTweets){                
+                if( $numOfTweets <= $numberOfTweetsToDisplay){                
                 Twitter::printTweetsInScope($user->getId(), 0, $numOfTweets);
                 $printLinks = false;
-                } elseif( $numOfTweets > $numOfDisplayTweets ){                    
+                } elseif( $numOfTweets > $numberOfTweetsToDisplay ){ 
+                     
                     $printLinks = true;
-                    if( isset($_GET['tweetsToDisplayPage']) ) { 
-                       
-                        if( $_GET['tweetsToDisplayPage'] != "" ){                            
-                            
-                            Twitter::printTweetsInScope($user->getId(), ($_GET['tweetsToDisplayPage']-1)*$numOfDisplayTweets, $numOfDisplayTweets);
-                            $currentDisplayedTweetsScope = ($_GET['tweetsToDisplayPage']);
-                            
-                        }               
+                    if( $_SERVER['REQUEST_METHOD'] === 'GET' && isset( $_GET['tweetsToDisplayPage']) ) { 
+                         if( is_numeric( intval($_GET['tweetsToDisplayPage'])) && $_GET['tweetsToDisplayPage'] != "" ){                                  
+                                 Twitter::printTweetsInScope($user->getId(), ($_GET['tweetsToDisplayPage']-1)*$numberOfTweetsToDisplay, $numberOfTweetsToDisplay);
+                                 $currentDisplayedTweetsScope = ($_GET['tweetsToDisplayPage']);
+                         }               
                     } else {                        
-                        Twitter::printTweetsInScope($user->getId(), 0, $numOfDisplayTweets);
+                        Twitter::printTweetsInScope($user->getId(), 0, $numberOfTweetsToDisplay);
                         $currentDisplayedTweetsScope = 1;
                     }
                 }
@@ -51,7 +49,7 @@ if(isset($user)){
             }
 
     if($printLinks){
-        for($i=1; $i<= ceil($numOfTweets/$numOfDisplayTweets); $i++){
+        for($i=1; $i<= ceil($numOfTweets/$numberOfTweetsToDisplay); $i++){
             if($i==$currentDisplayedTweetsScope){
                 echo "[".$i."]";
             } else {
@@ -61,3 +59,6 @@ if(isset($user)){
     }   
     
 }
+
+
+echo '</br><a href="addTweet.php">dodaj nowy tweet</a></br>';

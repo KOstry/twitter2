@@ -14,6 +14,7 @@
 class Twitter {
     private $id,
             $user_id,
+            $tweet_name,
             $twitter_text,
             $twitter_creation_date;
     
@@ -22,8 +23,17 @@ class Twitter {
         $this->setTwitter_creation_date("");
         $this->setTwitter_text("");
         $this->setUser_id("");
+        $this->setTweet_name("");
+        
     }
-    
+    private function  setTweet_name($tweet_name) {
+        $this->tweet_name = $tweet_name;
+    }
+
+    function getTweet_name() {
+        return $this->tweet_name;
+    }
+
     
     public static function loadTweetById($tweet_id, $user_id){
         $pdo = Db::getInstance();
@@ -45,11 +55,45 @@ class Twitter {
             $tweet->setTwitter_creation_date($queryResult->twitter_creation_date);
             $tweet->setTwitter_text($queryResult->twitter_text);
             $tweet->setUser_id($queryResult->user_id);
+            $tweet->setTweet_name($queryResult->tweet_name);
             
             return $tweet;
         }
     return null;    
     }
+    
+    
+    public function saveToDb(){
+            
+            $pdo = Db::getInstance();
+            $db = $pdo->get_pdo();
+
+            if($this->id == -1){
+                $sql = "insert into Twitter (tweet_name, user_id, twitter_text) values (?, ?, ?)";
+                $preparedQuery = $db->prepare($sql);
+                $insertArray = array($this->getTweet_name(), $this->getUser_id(), $this->getTwitter_text());
+                for($i=1;$i <= 3; $i++ ){
+                    $preparedQuery->bindValue($i, $insertArray[$i-1]);                
+                }           
+                if($preparedQuery->execute()){
+                    $this->id = $db->lastInsertId();
+                    return true;
+                }
+            } else {
+                $sql = "update Twitter set tweet_name = ?, user_id = ?, twitter_text = ? where id = ".$this->getId();
+                $preparedQuery = $db->prepare($sql);
+                $insertArray = array($this->getTweet_name(), $this->getUser_id(), $this->getTwitter_text());
+                for($i=1;$i <= 3; $i++ ){
+                    $preparedQuery->bindValue($i, $insertArray[$i-1]);                
+                }
+                if($preparedQuery->execute()){
+                    $this->id = $db->lastInsertId();
+                    return true;
+                }
+            }
+            return false;
+        }
+    
     
     public static function getNumberOfTweetsByUser($userId){
         $pdo = Db::getInstance();
@@ -97,9 +141,9 @@ class Twitter {
         
         if ($preparedQuery->rowCount() > 0){
            
-            echo "<table><tr><td>text</td><td>date</td></tr>";
+            echo "<table><tr><td>tweet_name</td><td>text</td><td>date</td></tr>";
             foreach($preparedQuery->fetchAll(PDO::FETCH_ASSOC) as $tweet){
-                echo "<tr><td>".$tweet['twitter_text']."</td><td>".$tweet['twitter_creation_date']."</td></tr>";
+                echo '<tr><td><a href="displayPost.php?tweetId='. $tweet['id'].'">'.$tweet['tweet_name'] .'</a></td><td>'.$tweet['twitter_text'].'</td><td>'.$tweet['twitter_creation_date'].'</td></tr>';
                 
             }
             echo "</table>";
@@ -113,6 +157,10 @@ class Twitter {
     
     private function setId($id) {
         $this->id = $id;
+    }
+    
+    public function setTweetName($tweetName){
+        $this->tweet_name = $tweetName;
     }
 
         
