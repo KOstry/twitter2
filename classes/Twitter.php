@@ -69,6 +69,7 @@ class Twitter {
             $db = $pdo->get_pdo();
 
             if($this->id == -1){
+                echo "insert path";
                 $sql = "insert into Twitter (tweet_name, user_id, twitter_text) values (?, ?, ?)";
                 $preparedQuery = $db->prepare($sql);
                 $insertArray = array($this->getTweet_name(), $this->getUser_id(), $this->getTwitter_text());
@@ -80,6 +81,7 @@ class Twitter {
                     return true;
                 }
             } else {
+                echo "update path";
                 $sql = "update Twitter set tweet_name = ?, user_id = ?, twitter_text = ? where id = ".$this->getId();
                 $preparedQuery = $db->prepare($sql);
                 $insertArray = array($this->getTweet_name(), $this->getUser_id(), $this->getTwitter_text());

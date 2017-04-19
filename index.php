@@ -45,7 +45,7 @@ if(isset($user)){
                     }
                 }
             } else {
-                echo '<p>nie masz żadnych tweetów! Stwórz je: <a href="addTweet.php">dodaj tweet</a></p>';
+                echo '<p>nie masz żadnych tweetów! Stwórz je!</p>';
             }
 
     if($printLinks){
@@ -58,7 +58,10 @@ if(isset($user)){
         }
     }   
     
+    echo '</br><a href="addTweet.php">dodaj nowy tweet</a></br>';
+    
 }
 
 
-echo '</br><a href="addTweet.php">dodaj nowy tweet</a></br>';
+
+
